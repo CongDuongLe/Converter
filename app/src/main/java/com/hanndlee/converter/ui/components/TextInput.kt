@@ -42,8 +42,11 @@ fun TextInput(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
-                .border(1.dp, Color.Black, RoundedCornerShape(100.dp))
+                .background(Color.Transparent)
+                .border(1.dp,
+                    // darktheme is white and lighttheme is black
+                    MaterialTheme.colorScheme.onSurface,
+                    RoundedCornerShape(100.dp))
         ) {
             if (visualTransformation != null) {
                 TextField(
@@ -65,7 +68,7 @@ fun TextInput(
                         unfocusedIndicatorColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
-                        cursorColor = Color.Black,
+                        cursorColor = MaterialTheme.colorScheme.onSurface,
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {

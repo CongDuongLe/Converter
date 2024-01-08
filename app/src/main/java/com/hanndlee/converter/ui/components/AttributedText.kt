@@ -2,6 +2,7 @@ package com.hanndlee.converter.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,11 +19,10 @@ fun AttributedText(inputString: String, keywordActions: Map<String, () -> Unit>)
     val annotatedString = buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                color = Color.Black,
                 fontFamily = Poppins,
                 fontWeight = FontWeight.W400,
                 fontSize = 13.sp,
-                textDecoration = TextDecoration.None,
+                color = MaterialTheme.colorScheme.onSurface
             )
         ) {
             append(inputString)
@@ -41,13 +41,13 @@ fun AttributedText(inputString: String, keywordActions: Map<String, () -> Unit>)
                 )
 
                 // Apply a different style to the keywords
-                withStyle(style = SpanStyle(color = Color.Black)) {
+                withStyle(style = SpanStyle(color = Color.White)) {
                     addStyle(
                         style = SpanStyle(
-                            color = Color.Black,
                             fontWeight = FontWeight.W600,
                             fontFamily = Poppins,
                             fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurface
                         ),
                         start = startIndex,
                         end = endIndex
