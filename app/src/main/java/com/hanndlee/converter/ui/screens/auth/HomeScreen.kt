@@ -1,15 +1,16 @@
 package com.hanndlee.converter.ui.screens.auth
 
 import android.widget.Toast
+import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,44 +62,65 @@ fun HomeScreen(navController: NavHostController) {
         }
     }
 
+    val scrollState = rememberLazyStaggeredGridState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                vertical = 16.dp,
-                horizontal = 16.dp
-            ),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-
-        var searchText by remember { mutableStateOf("") }
-
-        SearchBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            onSearch = { searchText = it },
-            searchText = searchText
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyVerticalStaggeredGrid(
-            modifier = Modifier
-                .fillMaxSize(),
-            userScrollEnabled = true,
-            columns = StaggeredGridCells.Fixed(2),
-        ) {
-            items(
-                listCategory.filter { it.strCategory.contains(searchText, ignoreCase = true) }
-            ) { item: Category ->
-                CategoryItem(category = item, navController = navController)
-            }
+    var searchText by remember {
+        mutableStateOf("")
+    }
+    val isScrolled by remember {
+        derivedStateOf {
+            scrollState.firstVisibleItemScrollOffset != 0
         }
     }
+
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        topBar = {
+            AnimatedVisibility(
+                visible = isScrolled,
+                exit = slideOutVertically() + fadeOut(),
+                enter = slideInVertically() + fadeIn()
+            ) {
+                SearchBar(
+                    onSearch = {
+                        searchText = it
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    searchText = searchText,
+                )
+            }
+        },
+        content = { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = if (!isScrolled) 0.dp else paddingValues.calculateTopPadding()
+
+                    )
+            ) {
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    state = scrollState,
+                    columns = StaggeredGridCells.Fixed(2),
+                ) {
+                    items(listCategory.filter {
+                        it.strCategory.contains(searchText, ignoreCase = true)
+                    }) { category ->
+                        CategoryItem(
+                            category = category,
+                            navController = navController,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp)
+                        )
+                    }
+                }
+            }
+        }
+    )
+
 
 }
 
