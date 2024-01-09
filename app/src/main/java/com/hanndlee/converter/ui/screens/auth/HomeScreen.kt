@@ -1,103 +1,88 @@
 package com.hanndlee.converter.ui.screens.auth
 
-import android.widget.Toast
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.hanndlee.converter.models.Category
+import com.hanndlee.converter.repositories.viewmodels.CategoryViewModel
 import com.hanndlee.converter.ui.components.SearchBar
-import com.hanndlee.converter.utils.retrofit.RetrofitInstance
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.HttpException
-import java.io.IOException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController) {
 
-    var listCategory by remember {
-        mutableStateOf(listOf<Category>())
-    }
-    val context = LocalContext.current
+    val categoryViewModel: CategoryViewModel = viewModel()
+
+    val viewState by categoryViewModel.categoryState
 
 
-    val scope = rememberCoroutineScope()
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
+       when {
+           viewState.isLoading-> {
+               CircularProgressIndicator(modifier = Modifier
+                   .align(Alignment.Center)
+                   .fillMaxSize())
+           }
+           viewState.error != null -> {
+               Text(text = viewState.error!!, modifier = Modifier.align(Alignment.Center))
+           }
+           else -> {
+               Column(
+                   modifier = Modifier
+                       .fillMaxSize(),
+                   verticalArrangement = Arrangement.Top,
+                   horizontalAlignment = Alignment.CenterHorizontally
+               ) {
 
-    LaunchedEffect(key1 = true) {
-        scope.launch(Dispatchers.IO) {
-            val res = try {
-                RetrofitInstance.apiService.getCategories()
-            } catch (e: IOException) {
-                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                return@launch
-            } catch (e: HttpException) {
-                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                return@launch
-            }
-            if (res.isSuccessful && res.body() != null) {
-                withContext(Dispatchers.Main) {
-                    listCategory = res.body()!!.categories
-                }
-            } else {
-                Toast.makeText(context, "Error: ${res.code()}", Toast.LENGTH_SHORT).show()
-            }
+                   var searchText by remember { mutableStateOf("") }
+
+                   SearchBar(
+                       modifier = Modifier
+                           .fillMaxWidth()
+                           .padding(8.dp),
+                       onSearch = { searchText = it },
+                       searchText = searchText
+                   )
+                   Spacer(modifier = Modifier.height(8.dp))
+
+                   LazyVerticalGrid(
+                       modifier = Modifier
+                           .fillMaxSize(),
+                       userScrollEnabled = true,
+                       columns = GridCells.Fixed(2) ,
+                   ) {
 
 
-        }
-    }
+                       items(
+                         viewState.categories.filter {
+                               it.strCategory.contains(searchText, ignoreCase = true)
+                           }
+                       ) { item: Category ->
+                           CategoryItem(category = item, navController = navController)
+                       }
+                   }
+               }
+           }
+       }
 
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                vertical = 16.dp,
-                horizontal = 16.dp
-            ),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-
-        var searchText by remember { mutableStateOf("") }
-
-        SearchBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            onSearch = { searchText = it },
-            searchText = searchText
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyVerticalStaggeredGrid(
-            modifier = Modifier
-                .fillMaxSize(),
-            userScrollEnabled = true,
-            columns = StaggeredGridCells.Fixed(2),
-        ) {
-            items(
-                listCategory.filter { it.strCategory.contains(searchText, ignoreCase = true) }
-            ) { item: Category ->
-                CategoryItem(category = item, navController = navController)
-            }
-        }
     }
 
 }
