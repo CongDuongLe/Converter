@@ -69,6 +69,7 @@ fun TextInput(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         cursorColor = MaterialTheme.colorScheme.onSurface,
+
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {

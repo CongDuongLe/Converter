@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp").version("1.9.21-1.0.16")
 }
 
 android {
@@ -37,7 +38,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.7"
     }
     packaging {
         resources {
@@ -71,16 +72,35 @@ dependencies {
     // splash
     implementation("androidx.core:core-splashscreen:1.0.1")
 
-    // ktor
-    val ktorVersion = "2.3.7"
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-    implementation("io.ktor:ktor-client-logging:$ktorVersion")
+    // retrofit
 
-    // serialization
-    val serializationVersion = "1.6.2"
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+    val retrofitVersion = "2.9.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    // moshi converter
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
+
+    // viewmodel-compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    //coil
+    val coilVersion = "2.5.0"
+    implementation("io.coil-kt:coil-compose:$coilVersion")
+
+    // di with Koin
+    val koinAndroidVersion = "3.5.3"
+    implementation("io.insert-koin:koin-android:$koinAndroidVersion")
+    implementation("io.insert-koin:koin-androidx-compose:$koinAndroidVersion")
+
+    // moshi
+    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+    implementation("com.squareup.moshi:moshi-adapters:1.14.0")
+
+
+    // ksp
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.14.0")
+
+
+
 
 
 

@@ -1,8 +1,6 @@
 package com.hanndlee.converter.ui.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -13,9 +11,9 @@ import com.hanndlee.converter.R
 // Set of Material typography styles to start with
 
 val Poppins = FontFamily(
-    Font(R.font.poppins_regular, FontWeight.Normal),
-    Font(R.font.poppins_medium, FontWeight.Medium),
-    Font(R.font.poppins_semibold, FontWeight.SemiBold),
+    Font(R.font.poppins_regular, FontWeight.W400),
+    Font(R.font.poppins_medium, FontWeight.W500),
+    Font(R.font.poppins_semibold, FontWeight.W600),
 )
 
 
